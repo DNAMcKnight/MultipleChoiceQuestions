@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            color: rgb(209, 205, 199);
+            background-color: rgb(24, 26, 27);
+            
+        }
+
+        .container {
+            padding: 100px;
+            width: 50000px;
+            height: 700px;
+            {% comment %} border: 1px solid black; {% endcomment %}
+            margin: 0 auto;
+            position:relative;
+        }
+        #footer{
+            font-size: 22px;
+            width: 470px;
+            {% comment %} border: 1px solid black;  {% endcomment %}
+            height: 50px;
+            position:absolute;
+            top:0;
+            right:0;
+        }
+        #count {
+            font-size: 18px;
+        }
+        #options{
+            padding-bottom:50px;
+        }
+        .question {
+            padding-bottom:50px;
+            font-weight: bold;
+            font-size: 28px;
+            
+        }
+        .option-label {
+            padding-bottom:20px;
+            font-size: 22px;
+        }
+
+        .btn-primary {
+            width: 25%;
+            margin: 0 2%;
+        }
+
+        .reset-button {
+            width: 25%;
+            margin: 0 2%;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% if messages%}
+            {% for message in messages %}
+                <div class="alert alert-warning">{{message}}</div>
+            {%endfor%}
+        {%endif%}
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-10">
+                <h1 class="text-center">Technical Training Center Rajshahi</h1>
+                <h2 class="text-center">IT Support MCQ</h2>
+                <form id="quiz-form">
+                    <div id='count'>{{answered}}/{{totalQ}}</div>
+                    <div class="form-group">
+                        <p class="question">{{ question }}</p>
+                    </div>
+                    <div id="feedback" class="alert" role="alert" style="display: none;"></div>
+                        <div id="options">
+                            <div class="form-check">
+                                <input class="form-check-input option-radio" type="radio" name="answer" id="option1" value="{{ option1 }}">
+                                <label class="form-check-label option-label" for="option1">{{ option1 }}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input option-radio" type="radio" name="answer" id="option2" value="{{ option2 }}">
+                                <label class="form-check-label option-label" for="option2">{{ option2 }}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input option-radio" type="radio" name="answer" id="option3" value="{{ option3 }}">
+                                <label class="form-check-label option-label" for="option3">{{ option3 }}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input option-radio" type="radio" name="answer" id="option4" value="{{ option4 }}">
+                                <label class="form-check-label option-label" for="option4">{{ option4 }}</label>
+                            </div>
+                        </div>
+                    <button type="submit" class="btn btn-primary text-center">Submit</button>
+                    <a href="/reset" class="btn btn-secondary text-center reset-button">Reset</a>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+    <div id="footer">This App was created by Sidratul Muntaha 2023</div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const myForm = document.getElementById('quiz-form')
+        myForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            var feedbackDiv = document.getElementById('feedback');
+            console.log(selectedAnswer.value);
+            console.log("{{ answer|safe }}");
+            if (selectedAnswer) {
+                if (selectedAnswer.value == "{{ answer|safe }}") {
+                    feedbackDiv.textContent = "Correct!";
+                    feedbackDiv.className = 'alert alert-success';
+                    $.ajax({
+                        type:'POST',
+                        url:'',
+                        data:{
+                            question : '{{ id }}',
+                            csrfmiddlewaretoken:'{{ csrf_token }}'
+                        },
+                        success: function(data){
+                            setTimeout(function(){location.reload()}, 250);
+                        }
+                      });
+                } else {
+                    feedbackDiv.textContent = "Incorrect!";
+                    feedbackDiv.className = 'alert alert-danger';
+                }
+                feedbackDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

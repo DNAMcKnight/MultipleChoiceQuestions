@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Quiz Data</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            color: rgb(209, 205, 199);
+            background-color: rgb(24, 26, 27);
+        }
+
+        .container {
+            padding: 10px;
+        }
+
+        #count {
+            font-size: 18px;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 28px;
+        }
+
+        .option-label {
+            font-size: 22px;
+        }
+
+        .btn-primary {
+            width: 25%;
+            margin: 0 2%;
+        }
+
+        .reset-button {
+            width: 25%;
+            margin: 0 2%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        {% if messages%}
+            {% for message in messages %}
+            <div class="alert alert-warning" id="custom-alert">{{message}}</div>
+            {%endfor%}
+        {%endif%}
+      </div>
+    <div class="container mt-5">
+        
+        <div class="row justify-content-center align-items-center">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.as_p }}
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('quiz-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            var feedbackDiv = document.getElementById('feedback');
+            console.log(selectedAnswer.value);
+            console.log("{{ answer|safe }}");
+            if (selectedAnswer) {
+                if (selectedAnswer.value == "{{ answer|safe }}") {
+                    feedbackDiv.textContent = "Correct!";
+                    feedbackDiv.className = 'alert alert-success';
+                    location.reload();
+                } else {
+                    feedbackDiv.textContent = "Incorrect!";
+                    feedbackDiv.className = 'alert alert-danger';
+                }
+                feedbackDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
