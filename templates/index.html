@@ -123,8 +123,13 @@
                             question : '{{ id }}',
                             csrfmiddlewaretoken:'{{ csrf_token }}'
                         },
-                        success: function(data){
+                        beforeSend:function(){
                             location.reload();
+                        },
+                        complete:function(){
+                            
+                        },
+                        success: function(data){
                         }
                       });
                 } else {
