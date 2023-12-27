@@ -11,18 +11,24 @@ from .generate import generator
 from .models import MCQ
 import random, json
 import uuid
+from copy import deepcopy
 
-        
+
+
+MCQ_Data = None
 @login_required(login_url='login')
 def home(request):
+    global MCQ_Data
+    if not MCQ_Data:
+        MCQ_Data = MCQ.objects.all()
     userQuestions = UserQuestions.objects.filter(user=request.user).exists()
     if not userQuestions:
-        question = random.choice(MCQ.objects.all())
+        question = random.choice(deepcopy(MCQ_Data))
         create_id = str(uuid.uuid4())
         userQuestions = UserQuestions(encoded_id=create_id, used_question=[question.id], user= request.user)
         userQuestions.save()
     else:
-        questions = MCQ.objects.all()
+        questions = deepcopy(MCQ_Data)
         userQuestions = UserQuestions.objects.get(user=request.user)
         for i in userQuestions.used_question:
             questions = questions.exclude(id=i)
@@ -31,7 +37,6 @@ def home(request):
         question_id = request.POST['question']
         userQuestions.used_question += [question_id]
         userQuestions.save()
-        return redirect('home')
         
     options = list(question.options)
     random.shuffle(options)
