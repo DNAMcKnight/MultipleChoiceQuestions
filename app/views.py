@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.models import User, auth
+from django.contrib.auth.hashers import check_password
+from .models import UserQuestions, UserInfo
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.shortcuts import render
 from .forms import FileUploadForm
-from .models import UserQuestions
 from .generate import generator
 from .models import MCQ
 import random, json
@@ -14,19 +15,15 @@ import uuid
         
 @login_required(login_url='login')
 def home(request):
-    encoded_id = request.session.get('encoded_id', None)
-    if not encoded_id:
+    userQuestions = UserQuestions.objects.filter(user=request.user).exists()
+    if not userQuestions:
         question = random.choice(MCQ.objects.all())
         create_id = str(uuid.uuid4())
-        userQuestions = UserQuestions(encoded_id=create_id, used_question=[question.id])
+        userQuestions = UserQuestions(encoded_id=create_id, used_question=[question.id], user= request.user)
         userQuestions.save()
-        request.session['encoded_id'] = (create_id)
     else:
-        if not UserQuestions.objects.filter(encoded_id=encoded_id).exists():
-            del request.session['encoded_id']
-            return redirect('home')
         questions = MCQ.objects.all()
-        userQuestions = UserQuestions.objects.get(encoded_id=encoded_id)
+        userQuestions = UserQuestions.objects.get(user=request.user)
         for i in userQuestions.used_question:
             questions = questions.exclude(id=i)
         question = random.choice(questions)
@@ -57,12 +54,12 @@ def login(request):
         auth.logout(request)
     except Exception:
         pass
-
-    print(request.user)
     if request.method=='POST':
+        username=request.POST['username'].lower()
         password=request.POST['password']
-        username=request.POST['username']
+        
         user=auth.authenticate(username=username,password=password)
+        print(user)
         if user is not None:
             auth.login(request,user)
             messages.info(request,f'Welcome {request.user}')
@@ -81,18 +78,32 @@ def signup(request):
         pass
     if request.method=='POST':
         username=request.POST['username'].lower()
-        passwords=request.POST['password'] 
+        password=request.POST['password']
+        confirm_password=request.POST['confirm_password']
         email=request.POST['emailaddress']
-        if User.objects.filter(email=email).exists():
+        phone = request.POST['phone']
+        print(username, email, phone, password, confirm_password)
+        try:
+            print(int(phone))
+        except Exception:
+            messages.info(request, 'Not a valid phone number!')
+        if password != confirm_password:
+            messages.info(request,'Passwords did not match!')
+        elif User.objects.filter(email=email).exists():
             messages.info(request,'Email Already In Use')
         elif User.objects.filter(username=username).exists():
             messages.info(request,'Username Already In Use')
+        elif UserInfo.objects.filter(phone=phone).exists():
+            messages.info(request, 'Phone number already in use!')
         else:    
-            user=User.objects.create_user(username=username,email=email,password=passwords)
-            user.save();
+            user=User.objects.create_user(username=username,email=email,password=password)
+            userInfo = UserInfo(user=user, phone=phone, correct=0, incorrect=0)
+            userInfo.save()            
+            user.save()
             messages.info(request,'Sign Up Successfull')
+            return redirect('login')
 
-        return redirect('Signup')
+        return redirect('signup')
     return render(request, "signup.html")
 
 def logout(response):

@@ -12,11 +12,11 @@
 <body class="align">
 
   <div class="grid">
-{% if messages%}
-  {% for message in messages %}
-    <div class="alert alert-warning">{{message}}</div>
-    {%endfor%}
-{%endif%}
+    {% if messages%}
+    {% for message in messages %}
+      <div class="alert alert-warning"><h2>{{message}}<h2></div>
+      {%endfor%}
+  {%endif%}
     <form method="POST" action="{% url 'login' %}" class="form login">
       {% csrf_token %}
       <div class="form__field">

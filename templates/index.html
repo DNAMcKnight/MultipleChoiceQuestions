@@ -124,7 +124,7 @@
                             csrfmiddlewaretoken:'{{ csrf_token }}'
                         },
                         success: function(data){
-                            setTimeout(function(){location.reload()}, 250);
+                            location.reload();
                         }
                       });
                 } else {

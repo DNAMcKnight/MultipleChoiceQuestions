@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MCQ, Import,UserQuestions
+from .models import MCQ, Import,UserQuestions,UserInfo
 
 # admin.site.register(MCQ)
 class questions(admin.ModelAdmin):
@@ -8,3 +8,4 @@ class questions(admin.ModelAdmin):
 admin.site.register(MCQ, questions)
 admin.site.register(Import)
 admin.site.register(UserQuestions)
+admin.site.register(UserInfo)

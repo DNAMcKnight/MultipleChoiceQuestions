@@ -14,11 +14,11 @@
   <div class="grid">
   {% if messages%}
     {% for message in messages %}
-      <div class="alert alert-warning">{{message}}</div>
+      <div class="alert alert-warning"><h2>{{message}}<h2></div>
       {%endfor%}
   {%endif%}
-    <form action="{% url signup %}" method="POST" class="form login">
-
+    <form action="{% url 'signup' %}" method="POST" class="form login">
+      {% csrf_token %}
       <div class="form__field">
         <label for="login__username"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#user"></use></svg><span class="hidden">Username</span></label>
         <input id="login__username" type="text" name="username" class="form__input" placeholder="Username" required>
@@ -30,13 +30,18 @@
       </div>
 
       <div class="form__field">
+        <label for="login__password"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#email"></use></svg><span class="hidden">Password</span></label>
+        <input id="login__phone" type="text" name="emailaddress" class="form__input" placeholder="Email" required>
+      </div>
+
+      <div class="form__field">
         <label for="login__password"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#lock"></use></svg><span class="hidden">Password</span></label>
         <input id="login__password" type="password" name="password" class="form__input" placeholder="Password" required>
       </div>
 
       <div class="form__field">
         <label for="login__password"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#lock"></use></svg><span class="hidden">Password</span></label>
-        <input id="login__password" type="password" name="password" class="form__input" placeholder="Confirm Password" required>
+        <input id="login__password" type="password" name="confirm_password" class="form__input" placeholder="Confirm Password" required>
       </div>
 
       <div class="form__field">
