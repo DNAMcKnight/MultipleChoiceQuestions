@@ -184,10 +184,10 @@ def importData(request):
     # return HttpResponse("success")
             
 def reset(request):
-    encoded_id = request.session.get('encoded_id', None)
-    if not UserQuestions.objects.filter(encoded_id=encoded_id).exists():
+    if not UserQuestions.objects.filter(user=request.user).exists():
         del request.session['encoded_id']
         return redirect('home')
-    data = UserQuestions.objects.get(encoded_id=encoded_id)
-    data.delete()
+    data = UserQuestions.objects.get(user=request.user)
+    data.used_question = []
+    data.save()
     return redirect('home')
