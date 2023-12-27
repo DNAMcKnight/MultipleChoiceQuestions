@@ -32,11 +32,19 @@ def home(request):
         userQuestions = UserQuestions.objects.get(user=request.user)
         for i in userQuestions.used_question:
             questions = questions.exclude(id=i)
-        question = random.choice(questions)
+        try:
+            question = random.choice(questions)
+        except IndexError:
+            data = {
+        'answered': len(userQuestions.used_question),
+        'totalQ': len(MCQ.objects.all()),
+        }
+            return render(request, 'index.html', data)
     if request.method=='POST':
         question_id = request.POST['question']
-        userQuestions.used_question += [question_id]
-        userQuestions.save()
+        if question_id not in userQuestions.used_question:
+            userQuestions.used_question += [question_id]
+            userQuestions.save()
         
     options = list(question.options)
     random.shuffle(options)
